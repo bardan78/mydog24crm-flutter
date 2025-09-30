@@ -1,42 +1,30 @@
 steps:
-# 1. Kontener roboczy do instalacji i budowania Fluttera
+# 1. Kontener do instalacji Fluttera i kompilacji
+# Używamy prostego obrazu Ubuntu i instalujemy Fluttera.
 - name: 'bash'
-  # Używamy woluminu, aby zapewnić, że skompilowane pliki (build/web) będą dostępne w następnym kroku.
-  volumes:
-    - name: 'build-volume'
-      path: '/workspace'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Zapewnienie, że git jest zainstalowany
+      # Instalacja Gita i klonowanie Fluttera
       apt-get update && apt-get install -y git
-      # Klonowanie najnowszej STABILNEJ wersji Fluttera
       git clone https://github.com/flutter/flutter.git /usr/local/flutter
       
-      # Dodajemy Fluttera do ścieżki i używamy go tylko w tym kontenerze!
-      export PATH="$PATH:/usr/local/flutter/bin"
+      # Użycie /usr/local/flutter/bin/flutter bezpośrednio (bez dodawania do PATH)
+      /usr/local/flutter/bin/flutter config --enable-web
       
-      flutter config --enable-web
-      flutter pub get
-      
-      # Kompilacja. Pliki build/web zostaną zapisane w /workspace.
-      flutter build web --release
+      # Budowanie. WAŻNE: Wymagane jest, aby katalog główny projektu był katalogiem roboczym.
+      # Zawsze używamy pełnej ścieżki do Fluttera:
+      /usr/local/flutter/bin/flutter pub get
+      /usr/local/flutter/bin/flutter build web --release
 
 # 2. Wdrożenie na Firebase Hosting
+# Builder Firebase automatycznie odczytuje pliki z katalogu 'build/web'.
 - name: 'gcr.io/cloud-builders/firebase'
-  # Ten krok odczytuje skompilowane pliki z woluminu build-volume.
-  volumes:
-    - name: 'build-volume'
-      path: '/workspace'
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
 
 options:
+  # Opcja Logowania dla niestandardowego konta usługi.
   logging: CLOUD_LOGGING_ONLY
 
 timeout: '1600s'
-
-volumes:
-  # Definicja woluminu, aby pliki mogły być udostępnione.
-  - name: 'build-volume'
-    path: '/workspace'
