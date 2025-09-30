@@ -1,27 +1,23 @@
 steps:
-# 1. Instalacja Fluttera i Kompilacja (TEN KROK JEST JUŻ W PORZĄDKU)
-- name: 'ubuntu' 
+# 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
+# Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
+- name: 'gcr.io/mydog24crm/flutter-builder:latest' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      apt-get update -y
-      apt-get install -y git curl unzip 
-      git clone https://github.com/flutter/flutter.git /usr/local/flutter
-      /usr/local/flutter/bin/flutter config --enable-web
-      /usr/local/flutter/bin/flutter pub get
-      /usr/local/flutter/bin/flutter build web --release
+      # Nie musimy nic instalować! Wszystko jest już gotowe.
+      flutter config --enable-web
+      flutter pub get
+      flutter build web --release
 
-# 2. Wdrożenie na Firebase Hosting za pomocą aktualnego Node.js
-- name: 'node:20' # Zmieniamy na oficjalny obraz Node.js w wersji 20 (LTS)
+# 2. Wdrożenie na Firebase Hosting (używamy Node.js, które działało ostatnim razem)
+- name: 'node:20' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Instalujemy Firebase CLI globalnie w tym kontenerze
       npm install -g firebase-tools
-      
-      # Wykonujemy deployment na Firebase Hosting
       firebase deploy --only hosting --project ${PROJECT_ID}
 
 options:
