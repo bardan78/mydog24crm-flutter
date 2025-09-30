@@ -1,0 +1,28 @@
+steps:
+# 1. Zainstalowanie Fluttera i przygotowanie środowiska
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Instalacja Fluttera
+      git clone https://github.com/flutter/flutter.git /usr/local/flutter
+      export PATH="$PATH:/usr/local/flutter/bin"
+      flutter config --enable-web
+      flutter doctor -v
+
+# 2. Pobranie zależności i budowanie aplikacji dla wersji web
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      export PATH="$PATH:/usr/local/flutter/bin"
+      flutter pub get
+      flutter build web --release
+
+# 3. Wdrożenie na Firebase Hosting
+- name: 'gcr.io/cloud-builders/firebase'
+  args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
+
+timeout: '1600s'
