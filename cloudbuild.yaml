@@ -1,7 +1,8 @@
 steps:
-# 1. Kompilacja Flutter Web za pomocą gotowego obrazu Dockerowego
-# Używamy oficjalnego obrazu Dockerowego, który ma zainstalowane wymagane narzędzia.
-- name: 'cirrusci/flutter:latest' 
+# 1. Kompilacja Flutter Web za pomocą obrazu 'stable'
+# Ten tag powinien zawsze wskazywać na najnowszą, stabilną wersję Fluttera,
+# co rozwiązuje problem z manifestem i z niezgodnością wersji Darta.
+- name: 'cirrusci/flutter:stable' # Zmieniamy na tag 'stable'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -15,12 +16,9 @@ steps:
 
 # 2. Wdrożenie na Firebase Hosting
 - name: 'gcr.io/cloud-builders/firebase'
-  # Użycie ${PROJECT_ID} automatycznie wskaże projekt GCP/Firebase
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
 
 options:
-  # Opcja wymagana, gdy używamy niestandardowego konta usługi (jak twoje konto 'compute')
-  # Zapewnia, że logi będą zapisywane w Cloud Logging, a nie w GCS.
   logging: CLOUD_LOGGING_ONLY
 
-timeout: '1600s' # Zwiększony limit czasu, aby kompilacja Fluttera miała czas się zakończyć
+timeout: '1600s'
