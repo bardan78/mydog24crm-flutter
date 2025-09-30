@@ -1,25 +1,28 @@
 steps:
-# 1. Instalacja Fluttera i Kompilacja
+# 1. Instalacja Fluttera i Kompilacja (TEN KROK DZIAŁA!)
 - name: 'ubuntu' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Aktualizacja i instalacja niezbędnych narzędzi: git, curl ORAZ unzip
       apt-get update -y
-      apt-get install -y git curl unzip # DODANO UNZIP
-      
-      # Klonowanie najnowszej STABILNEJ wersji Fluttera
+      apt-get install -y git curl unzip 
       git clone https://github.com/flutter/flutter.git /usr/local/flutter
-      
-      # Dalsza część bez zmian, używa pełnej ścieżki
       /usr/local/flutter/bin/flutter config --enable-web
       /usr/local/flutter/bin/flutter pub get
       /usr/local/flutter/bin/flutter build web --release
 
-# 2. Wdrożenie na Firebase Hosting
-- name: 'gcr.io/cloud-builders/firebase'
-  args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
+# 2. Wdrożenie na Firebase Hosting za pomocą NPM/Node.js
+- name: 'gcr.io/cloud-builders/npm' # Używamy stabilnego buildera NPM (Node.js)
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Instalujemy Firebase CLI globalnie w tym kontenerze
+      npm install -g firebase-tools
+      
+      # Wykonujemy deployment na Firebase Hosting
+      firebase deploy --only hosting --project ${PROJECT_ID}
 
 options:
   logging: CLOUD_LOGGING_ONLY
