@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           shadowColor: Colors.transparent,
         ),
       ),
-      home: const MyHomePage(title: 'Mydog CRM'),
+      home: const MyHomePage(title: 'Mydog24 CRM'),
     );
   }
 }
