@@ -1,30 +1,29 @@
 steps:
-# 1. Kontener do instalacji Fluttera i kompilacji
-# Używamy prostego obrazu Ubuntu i instalujemy Fluttera.
-- name: 'bash'
+# 1. Instalacja Fluttera i Kompilacja
+# Używamy oficjalnego obrazu Ubuntu, który ma apt-get i pozwala na instalację Gita.
+- name: 'ubuntu' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Instalacja Gita i klonowanie Fluttera
-      apt-get update && apt-get install -y git
+      # Instalacja Gita i klonowanie Fluttera (najnowsza stabilna wersja)
+      apt-get update -y
+      apt-get install -y git # git jest wymagany do klonowania Fluttera
+      
       git clone https://github.com/flutter/flutter.git /usr/local/flutter
       
-      # Użycie /usr/local/flutter/bin/flutter bezpośrednio (bez dodawania do PATH)
+      # Użycie pełnej, bezwzględnej ścieżki do Fluttera (omijanie błędu PATH)
       /usr/local/flutter/bin/flutter config --enable-web
-      
-      # Budowanie. WAŻNE: Wymagane jest, aby katalog główny projektu był katalogiem roboczym.
-      # Zawsze używamy pełnej ścieżki do Fluttera:
       /usr/local/flutter/bin/flutter pub get
       /usr/local/flutter/bin/flutter build web --release
 
 # 2. Wdrożenie na Firebase Hosting
-# Builder Firebase automatycznie odczytuje pliki z katalogu 'build/web'.
+# Ten builder odczyta skompilowane pliki z katalogu build/web.
 - name: 'gcr.io/cloud-builders/firebase'
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
 
 options:
-  # Opcja Logowania dla niestandardowego konta usługi.
+  # Opcja Logowania wymagana przy użyciu niestandardowego konta usługi
   logging: CLOUD_LOGGING_ONLY
 
 timeout: '1600s'
