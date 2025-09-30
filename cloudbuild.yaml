@@ -1,5 +1,5 @@
 steps:
-# 1. Instalacja Fluttera i Kompilacja (TEN KROK DZIAŁA!)
+# 1. Instalacja Fluttera i Kompilacja (TEN KROK JEST JUŻ W PORZĄDKU)
 - name: 'ubuntu' 
   entrypoint: 'bash'
   args:
@@ -12,8 +12,8 @@ steps:
       /usr/local/flutter/bin/flutter pub get
       /usr/local/flutter/bin/flutter build web --release
 
-# 2. Wdrożenie na Firebase Hosting za pomocą NPM/Node.js
-- name: 'gcr.io/cloud-builders/npm' # Używamy stabilnego buildera NPM (Node.js)
+# 2. Wdrożenie na Firebase Hosting za pomocą aktualnego Node.js
+- name: 'node:20' # Zmieniamy na oficjalny obraz Node.js w wersji 20 (LTS)
   entrypoint: 'bash'
   args:
     - '-c'
