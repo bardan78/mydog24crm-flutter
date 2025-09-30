@@ -1,20 +1,33 @@
 steps:
-# 1. Kompilacja Flutter Web za pomocą obrazu 'stable'
-# Ten tag powinien zawsze wskazywać na najnowszą, stabilną wersję Fluttera,
-# co rozwiązuje problem z manifestem i z niezgodnością wersji Darta.
-- name: 'cirrusci/flutter:stable' # Zmieniamy na tag 'stable'
+# 1. Pobieranie i Konfiguracja Fluttera (najnowsza stabilna wersja)
+# Używamy prostego obrazu Ubuntu, aby zainstalować Fluttera ręcznie.
+- name: 'bash'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Aktywacja obsługi web
-      flutter config --enable-web
-      # Pobranie zależności
+      # Zapewnienie, że git jest zainstalowany
+      apt-get update && apt-get install -y git
+      # Klonowanie najnowszej STABILNEJ wersji Fluttera
+      git clone https://github.com/flutter/flutter.git /usr/local/flutter
+      /usr/local/flutter/bin/flutter config --enable-web
+      
+# 2. Budowanie aplikacji (teraz ścieżka do Fluttera jest znana)
+- name: 'bash'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Dodajemy ścieżkę do Fluttera TYLKO dla tego kroku
+      export PATH="$PATH:/usr/local/flutter/bin"
+      
+      # Przejście do katalogu roboczego (jeśli to konieczne, usuń jeśli nie)
+      # cd [nazwa_twojego_katalogu_z_projektem] 
+      
       flutter pub get
-      # Kompilacja produkcyjna
       flutter build web --release
 
-# 2. Wdrożenie na Firebase Hosting
+# 3. Wdrożenie na Firebase Hosting
 - name: 'gcr.io/cloud-builders/firebase'
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
 
