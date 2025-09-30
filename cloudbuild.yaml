@@ -12,20 +12,17 @@ steps:
       git clone https://github.com/flutter/flutter.git /usr/local/flutter
       /usr/local/flutter/bin/flutter config --enable-web
       
-# 2. Budowanie aplikacji (teraz ścieżka do Fluttera jest znana)
+# 2. Budowanie aplikacji (TERAZ NAPRAWIAMY BŁĄD 'PATH')
 - name: 'bash'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Dodajemy ścieżkę do Fluttera TYLKO dla tego kroku
-      export PATH="$PATH:/usr/local/flutter/bin"
-      
-      # Przejście do katalogu roboczego (jeśli to konieczne, usuń jeśli nie)
-      # cd [nazwa_twojego_katalogu_z_projektem] 
-      
-      flutter pub get
-      flutter build web --release
+      # Używamy komendy 'env' zamiast 'export PATH' do modyfikacji ścieżki
+      # Zapewnia to, że parser Cloud Build nie zgłasza błędu.
+      # Zmienna PATH jest tymczasowo modyfikowana tylko na potrzeby tego kroku.
+      env PATH="$PATH:/usr/local/flutter/bin" flutter pub get
+      env PATH="$PATH:/usr/local/flutter/bin" flutter build web --release
 
 # 3. Wdrożenie na Firebase Hosting
 - name: 'gcr.io/cloud-builders/firebase'
