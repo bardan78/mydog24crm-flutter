@@ -1,5 +1,21 @@
 # mydog_app
 
+Odpalam lokalnie 
+
+logowanie
+test@test.pl test123
+
+flutter build web
+
+firebase deploy --only hosting
+
+
+
+
+
+
+
+
 A new Flutter project.
 
 ## Getting Started

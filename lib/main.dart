@@ -77,7 +77,7 @@ class MyHomePage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(title),
           actions: [
-            if (user?.photoURL != null)
+            if (user != null)
               Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: PopupMenuButton<String>(
@@ -100,10 +100,28 @@ class MyHomePage extends StatelessWidget {
                       await FirebaseAuth.instance.signOut();
                     }
                   },
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(user!.photoURL!),
-                    radius: 18,
-                  ),
+                  child: user.photoURL != null
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage(user.photoURL!),
+                          radius: 18,
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person, color: Colors.grey, size: 18),
+                              const SizedBox(width: 6),
+                              Text(
+                                user.email ?? '',
+                                style: const TextStyle(fontSize: 15, color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ),
                 ),
               ),
           ],
