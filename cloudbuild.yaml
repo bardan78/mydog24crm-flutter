@@ -1,7 +1,10 @@
 steps:
-# 1. Pobieranie i Konfiguracja Fluttera (najnowsza stabilna wersja)
-# Używamy prostego obrazu Ubuntu, aby zainstalować Fluttera ręcznie.
+# 1. Kontener roboczy do instalacji i budowania Fluttera
 - name: 'bash'
+  # Używamy woluminu, aby zapewnić, że skompilowane pliki (build/web) będą dostępne w następnym kroku.
+  volumes:
+    - name: 'build-volume'
+      path: '/workspace'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -10,25 +13,30 @@ steps:
       apt-get update && apt-get install -y git
       # Klonowanie najnowszej STABILNEJ wersji Fluttera
       git clone https://github.com/flutter/flutter.git /usr/local/flutter
-      /usr/local/flutter/bin/flutter config --enable-web
       
-# 2. Budowanie aplikacji (TERAZ NAPRAWIAMY BŁĄD 'PATH')
-- name: 'bash'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      # Używamy komendy 'env' zamiast 'export PATH' do modyfikacji ścieżki
-      # Zapewnia to, że parser Cloud Build nie zgłasza błędu.
-      # Zmienna PATH jest tymczasowo modyfikowana tylko na potrzeby tego kroku.
-      env PATH="$PATH:/usr/local/flutter/bin" flutter pub get
-      env PATH="$PATH:/usr/local/flutter/bin" flutter build web --release
+      # Dodajemy Fluttera do ścieżki i używamy go tylko w tym kontenerze!
+      export PATH="$PATH:/usr/local/flutter/bin"
+      
+      flutter config --enable-web
+      flutter pub get
+      
+      # Kompilacja. Pliki build/web zostaną zapisane w /workspace.
+      flutter build web --release
 
-# 3. Wdrożenie na Firebase Hosting
+# 2. Wdrożenie na Firebase Hosting
 - name: 'gcr.io/cloud-builders/firebase'
+  # Ten krok odczytuje skompilowane pliki z woluminu build-volume.
+  volumes:
+    - name: 'build-volume'
+      path: '/workspace'
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 timeout: '1600s'
+
+volumes:
+  # Definicja woluminu, aby pliki mogły być udostępnione.
+  - name: 'build-volume'
+    path: '/workspace'
