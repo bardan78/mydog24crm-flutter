@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mydog CRM – Prototyp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Mydog CRM</h1>
+    <button class="bg-black text-white px-4 py-2 rounded-xl">Podsumowanie</button>
+  </header>
+
+  <!-- Pasek wyszukiwania -->
+  <div class="flex items-center bg-white shadow rounded-xl mb-6">
+    <input type="text" placeholder="Szukaj psa po imieniu..." class="flex-grow px-4 py-2 rounded-l-xl focus:outline-none" />
+    <button class="bg-blue-600 text-white px-4 py-2 rounded-r-xl">➕</button>
+  </div>
+
+  <!-- Wynik wyszukiwania (zwiniety) -->
+  <div class="bg-white shadow-md rounded-2xl p-4 mb-4 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+    <div class="flex justify-between items-center">
+      <div>
+        <h2 class="text-xl font-semibold">🐶 Tako</h2>
+        <p class="text-sm text-gray-600">Maltańczyk, 4 mce</p>
+        <p class="text-sm text-gray-600">🆔 1572</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="tel:696582069" class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-sm">📞</a>
+        <a href="tel:881221699" class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-sm">📞</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Szczegóły klienta z historią wizyt (rozwijane) -->
+  <div class="hidden bg-white shadow-md rounded-2xl p-4 mb-6">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-bold text-lg">Historia wizyt</h3>
+      <button class="bg-blue-600 text-white px-3 py-2 rounded-xl">➕ Dodaj wizytę</button>
+    </div>
+
+    <div class="space-y-4">
+      <!-- Wizyta -->
+      <div class="bg-gray-50 border rounded-xl p-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="font-bold text-lg text-orange-600">100 zł</p>
+            <p class="text-gray-500 text-sm">28-09-2021 12:00</p>
+          </div>
+          <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs">FULL</span>
+          <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs">13 mm z włosem</span>
+          <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-lg text-xs">45 min</span>
+        </div>
+        <div class="mt-2 text-sm text-gray-700">
+          <ul class="list-disc list-inside">
+            <li>Sierść nie była zmechacona</li>
+            <li>Uszy podcięte z długości</li>
+            <li>Cały na równo</li>
+            <li>Pies grzeczny</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Kolejna wizyta -->
+      <div class="bg-gray-50 border rounded-xl p-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="font-bold text-lg text-orange-600">30 zł</p>
+            <p class="text-gray-500 text-sm">28-07-2021 15:00</p>
+          </div>
+          <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs">HIG</span>
+          <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs">Pod włos</span>
+          <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-lg text-xs">15 min</span>
+        </div>
+        <div class="mt-2 text-sm text-gray-700">
+          <ul class="list-disc list-inside">
+            <li>Tylko higiena</li>
+            <li>Pies zmechacony</li>
+            <li>Podcięte stopy, pisiorek, okolice oczu</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating button na mobile -->
+  <button class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg text-2xl">➕</button>
+</body>
+</html>
