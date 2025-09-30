@@ -1,29 +1,23 @@
 steps:
-# 1. Zainstalowanie Fluttera i przygotowanie środowiska
-- name: 'gcr.io/cloud-builders/gcloud'
+# 1. Kompilacja Flutter Web za pomocą gotowego obrazu Dockerowego
+# Używamy oficjalnego obrazu Dockerowego, który ma zainstalowane wymagane narzędzia.
+- name: 'cirrusci/flutter:latest' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Instalacja Fluttera
-      git clone https://github.com/flutter/flutter.git /usr/local/flutter
-      export PATH="$PATH:/usr/local/flutter/bin"
+      # Aktywacja obsługi web
       flutter config --enable-web
-      flutter doctor -v
-
-# 2. Pobranie zależności i budowanie aplikacji dla wersji web
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      export PATH="$PATH:/usr/local/flutter/bin"
+      # Pobranie zależności
       flutter pub get
+      # Kompilacja produkcyjna
       flutter build web --release
 
-# 3. Wdrożenie na Firebase Hosting
+# 2. Wdrożenie na Firebase Hosting
 - name: 'gcr.io/cloud-builders/firebase'
   args: ['deploy', '--only', 'hosting', '--project', '${PROJECT_ID}']
+
 options:
   logging: CLOUD_LOGGING_ONLY
+
 timeout: '1600s'
