@@ -69,12 +69,44 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(title),
+          actions: [
+            if (user?.photoURL != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: PopupMenuButton<String>(
+                  tooltip: 'Konto',
+                  offset: const Offset(0, 40),
+                  itemBuilder: (context) => [
+                    PopupMenuItem<String>(
+                      value: 'logout',
+                      child: Row(
+                        children: const [
+                          Icon(Icons.logout, size: 18, color: Colors.redAccent),
+                          SizedBox(width: 8),
+                          Text('Wyloguj'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) async {
+                    if (value == 'logout') {
+                      await FirebaseAuth.instance.signOut();
+                    }
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(user!.photoURL!),
+                    radius: 18,
+                  ),
+                ),
+              ),
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.search), text: 'Wyszukiwarka'),

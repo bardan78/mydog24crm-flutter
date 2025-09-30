@@ -21,9 +21,7 @@ class _LoginPageState extends State<LoginPage> {
       // Logowanie Google na webie
       final provider = GoogleAuthProvider();
       await FirebaseAuth.instance.signInWithPopup(provider);
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/');
-      }
+      // Nie nawiguj ręcznie! StreamBuilder w main.dart przełączy widok.
     } else {
       // Logowanie Google na mobile
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -37,9 +35,7 @@ class _LoginPageState extends State<LoginPage> {
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/');
-      }
+      // Nie nawiguj ręcznie! StreamBuilder w main.dart przełączy widok.
     }
   } catch (e) {
     setState(() { _error = e.toString(); });

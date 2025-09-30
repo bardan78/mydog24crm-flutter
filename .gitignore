@@ -80,3 +80,4 @@ web/build/
 # ---------------------------
 app.*.symbols
 app.*.map.json
+"lib/firebase_options.dart" 
