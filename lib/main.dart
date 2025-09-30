@@ -1,5 +1,8 @@
 
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mydog_app/firebase_options.dart';
+import 'auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'search/search_page.dart';
 
@@ -16,8 +19,11 @@ class RaportPage extends StatelessWidget {
 }
 
 
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
   runApp(const MyApp());
 }
 
@@ -39,7 +45,18 @@ class MyApp extends StatelessWidget {
           shadowColor: Colors.transparent,
         ),
       ),
-      home: const MyHomePage(title: 'Mydog24 CRM'),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          if (!snapshot.hasData) {
+            return const LoginPage();
+          }
+          return const MyHomePage(title: 'Mydog24 CRM');
+        },
+      ),
     );
   }
 }

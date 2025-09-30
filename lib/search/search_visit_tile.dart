@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'search_models.dart';
-import 'package:flutter/material.dart';
-import 'search_models.dart';
 import '_service_type_chip.dart';
 
 class SearchVisitTile extends StatelessWidget {
