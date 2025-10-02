@@ -54,8 +54,8 @@ steps:
       firebase deploy --only hosting --project ${PROJECT_ID}
 
 available_secrets:
-- secret: flutter-api-key # Nazwa Twojego sekretu w Secret Manager
-  env: FIREBASE_API_KEY # Nazwa, pod którą sekret jest dostępny w środowisku (używana w secretEnv)
+- secret: flutter-api-key 
+  env: FIREBASE_API_KEY
 
 options:
   logging: CLOUD_LOGGING_ONLY
