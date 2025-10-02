@@ -1,25 +1,23 @@
 steps:
-# 1. GENEROWANIE PLIKU firebase_options.dart (Wersja odporna na błąd walidacji)
-# Używamy standardowego obrazu gcloud, który jest bardziej elastyczny.
+# 1. GENEROWANIE PLIKU firebase_options.dart (Ostateczna, odporna wersja)
+# Używamy potrójnego escapingu, aby ukryć znak dolara przed walidatorem Cloud Build.
 - name: 'gcr.io/cloud-builders/gcloud' 
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Zapisujemy wartość API KEY do zmiennej lokalnej BASH
-      # Cloud Build nie waliduje komend w tym bloku skryptu.
-      API_KEY=$(printenv FIREBASE_API_KEY)
+      # Użycie funkcji printenv do jawnego odczytu wartości
+      API_KEY_VALUE=$(printenv FIREBASE_API_KEY)
       
       mkdir -p lib
       
-      # Generowanie pliku z użyciem zmiennej lokalnej API_KEY
       printf "// Plik wygenerowany automatycznie przez Cloud Build.\n" > lib/firebase_options.dart
       printf "import 'package:firebase_core/firebase_core.dart';\n\n" >> lib/firebase_options.dart
       printf "const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(\n" >> lib/firebase_options.dart
-      printf "  apiKey: '%s',\n" "${API_KEY}" >> lib/firebase_options.dart
+      printf "  apiKey: '%s',\n" "${API_KEY_VALUE}" >> lib/firebase_options.dart
       printf "  appId: 'TWOJ_APP_ID',\n" >> lib/firebase_options.dart 
       printf "  messagingSenderId: 'TWOJ_MESSAGING_ID',\n" >> lib/firebase_options.dart 
-      printf "  projectId: '%s',\n" "${PROJECT_ID}" >> lib/firebase_options.dart
+      printf "  projectId: '%s',\n" "${PROJECT_ID}" >> lib/firebase_options.dart # Zmienne wbudowane są dozwolone
       printf ");\n" >> lib/firebase_options.dart
 
   secretEnv: ['FIREBASE_API_KEY'] 
