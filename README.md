@@ -1,6 +1,9 @@
 # mydog_app
 
-Odpalam lokalnie 
+Odpalam lokalnie  port jest wazny bo CORSY
+flutter run -d chrome --web-port=58515
+
+
 
 logowanie
 test@test.pl test123

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'search_client_tile.dart';
 import 'search_models.dart';
 
@@ -17,18 +19,49 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _search() async {
     setState(() { _loading = true; });
-    await Future.delayed(const Duration(seconds: 1));
-    // Tu będzie pobieranie z API, na razie mock
-    _results = mockClients;
-    _expandedClients.clear();
-    setState(() { _loading = false; });
+    try {
+      final query = _controller.text.trim();
+      if (query.isEmpty) {
+        setState(() {
+          _results = [];
+          _expandedClients.clear();
+          _loading = false;
+        });
+        return;
+      }
+      final url = Uri.parse('https://mydog24crm-app-844017125587.europe-central2.run.app/api/1/clients?q=$query');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        print('API response: ${response.body}');
+        print('Parsed clients: ${data.length}');
+        _results = data.map((json) => ClientModel.fromJson(json)).toList();
+      } else {
+        print('API error: ${response.statusCode}');
+        _results = [];
+      }
+      _expandedClients.clear();
+    } catch (e) {
+      print('Search error: $e');
+      _results = [];
+    } finally {
+      setState(() { _loading = false; });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFFAFAFA),
-      child: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // TODO: przejście do ekranu dodawania klienta
+        },
+        icon: const Icon(Icons.person_add),
+        label: const Text('Dodaj klienta'),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Column(
@@ -73,19 +106,6 @@ class _SearchPageState extends State<SearchPage> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: przejście do ekranu dodawania klienta
-                            },
-                            icon: const Icon(Icons.person_add, color: Colors.blueAccent),
-                            label: const Text('Dodaj klienta', style: TextStyle(color: Colors.blueAccent)),
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              minimumSize: const Size(90, 48),
-                              side: const BorderSide(color: Colors.blueAccent),
-                            ),
-                          ),
                         ],
                       ),
                     ],
@@ -98,44 +118,50 @@ class _SearchPageState extends State<SearchPage> {
                   padding: EdgeInsets.all(32),
                   child: CircularProgressIndicator(),
                 ))
-              else if (_results.isEmpty)
-                const Center(child: Padding(
-                  padding: EdgeInsets.all(32),
-                  child: Text('Brak wyników', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                ))
-              else
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _results.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
-                  itemBuilder: (context, idx) {
-                    final client = _results[idx];
-                    final expanded = _expandedClients.contains(client.id);
-                    return SearchClientTile(
-                      client: client,
-                      expanded: expanded,
-                      onExpand: (bool value) {
-                        setState(() {
-                          if (value) {
-                            _expandedClients.add(client.id);
-                          } else {
-                            _expandedClients.remove(client.id);
-                          }
-                        });
-                      },
-                      onAddVisit: () {
-                        // TODO: przejście do ekranu dodawania wizyty
-                      },
-                      onEditVisit: (visit) {
-                        // TODO: przejście do ekranu edycji wizyty
-                      },
-                      onEditClient: () {
-                        // TODO: przejście do ekranu edycji klienta
-                      },
-                    );
-                  },
+              else ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    _results.isNotEmpty
+                        ? 'Znaleziono ${_results.length} klientów'
+                        : 'Brak wyników',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
                 ),
+                if (_results.isNotEmpty)
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _results.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (context, idx) {
+                      final client = _results[idx];
+                      final expanded = _expandedClients.contains(client.id);
+                      return SearchClientTile(
+                        client: client,
+                        expanded: expanded,
+                        onExpand: (bool value) {
+                          setState(() {
+                            if (value) {
+                              _expandedClients.add(client.id);
+                            } else {
+                              _expandedClients.remove(client.id);
+                            }
+                          });
+                        },
+                        onAddVisit: () {
+                          // TODO: przejście do ekranu dodawania wizyty
+                        },
+                        onEditVisit: (visit) {
+                          // TODO: przejście do ekranu edycji wizyty
+                        },
+                        onEditClient: () {
+                          // TODO: przejście do ekranu edycji klienta
+                        },
+                      );
+                    },
+                  ),
+              ],
             ],
           ),
         ),

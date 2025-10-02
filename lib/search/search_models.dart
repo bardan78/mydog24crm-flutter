@@ -32,18 +32,18 @@ class ClientModel {
 
   factory ClientModel.fromJson(Map<String, dynamic> json) {
     return ClientModel(
-      id: json['id'],
-      clientNumber: json['clientNumber'],
-      breed: json['breed'],
-      name: json['name'],
-      tel1: json['tel1'],
-      tel2: json['tel2'],
-      tel3: json['tel3'],
-      email: json['email'],
-      ownerName: json['ownerName'],
-      firstVisitDate: json['firstVisitDate'],
-      created: json['created'],
-      updated: json['updated'],
+  id: (json['id'] is int) ? json['id'] : (json['id'] ?? 0),
+  clientNumber: (json['clientNumber'] is int) ? json['clientNumber'] : (json['clientNumber'] ?? 0),
+      breed: (json['breed'] ?? '')?.toString() ?? '',
+      name: (json['name'] ?? '')?.toString() ?? '',
+      tel1: (json['tel1'] ?? '')?.toString() ?? '',
+      tel2: (json['tel2'] ?? '')?.toString() ?? '',
+      tel3: (json['tel3'] ?? '')?.toString() ?? '',
+      email: (json['email'] ?? '')?.toString() ?? '',
+      ownerName: (json['ownerName'] ?? '')?.toString() ?? '',
+      firstVisitDate: (json['firstVisitDate'] ?? '')?.toString() ?? '',
+      created: (json['created'] ?? '')?.toString() ?? '',
+      updated: (json['updated'] ?? '')?.toString() ?? '',
       visits: (json['visits'] as List<dynamic>?)?.map((v) => VisitModel.fromJson(v)).toList() ?? [],
     );
   }
@@ -78,17 +78,17 @@ class VisitModel {
 
   factory VisitModel.fromJson(Map<String, dynamic> json) {
     return VisitModel(
-      id: json['id'],
-      visitDate: json['visitDate'],
-      visitHour: json['visitHour'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      serviceType: json['serviceType'],
-      knife: json['knife'],
-      withHair: json['withHair'],
-      duration: json['duration'],
-      created: json['created'],
-      updated: json['updated'],
+  id: (json['id'] is int) ? json['id'] : (json['id'] ?? 0),
+      visitDate: (json['visitDate'] ?? '')?.toString() ?? '',
+      visitHour: (json['visitHour'] ?? '')?.toString() ?? '',
+      description: (json['description'] ?? '')?.toString() ?? '',
+      price: (json['price'] != null) ? (json['price'] as num).toDouble() : 0.0,
+      serviceType: (json['serviceType'] ?? '')?.toString() ?? '',
+      knife: (json['knife'] ?? '')?.toString() ?? '',
+      withHair: json['withHair'] ?? false,
+  duration: (json['duration'] is int) ? json['duration'] : (json['duration'] ?? 0),
+      created: (json['created'] ?? '')?.toString() ?? '',
+      updated: (json['updated'] ?? '')?.toString() ?? '',
     );
   }
 }
