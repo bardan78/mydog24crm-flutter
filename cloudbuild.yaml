@@ -12,25 +12,30 @@ steps:
       import os
 
       API_KEY = os.environ.get('FIREBASE_API_KEY')
-      PROJECT_ID = os.environ.get('PROJECT_ID')
 
       config_content = f'''
       // Plik wygenerowany automatycznie przez Cloud Build.
       import 'package:firebase_core/firebase_core.dart';
 
-      const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(
-        apiKey: '{API_KEY}', 
-        appId: 'TWOJ_APP_ID', 
-        messagingSenderId: 'TWOJ_MESSAGING_ID', 
-        projectId: '{PROJECT_ID}',
-      );
+      class DefaultFirebaseOptions {{
+        static const FirebaseOptions web = FirebaseOptions(
+          apiKey: '{API_KEY}',
+          appId: '1:844017125587:web:49b2d9f1fdd81a2d2dac26',
+          messagingSenderId: '844017125587',
+          projectId: 'mydog24crm',
+          authDomain: 'mydog24crm.firebaseapp.com',
+          storageBucket: 'mydog24crm.firebasestorage.app',
+          measurementId: 'G-CJGW7X5JFD',
+        );
+        static FirebaseOptions get currentPlatform => web;
+      }}
       '''
 
-      # Zapisanie pliku
       with open('lib/firebase_options.dart', 'w') as f:
           f.write(config_content)
-      "
-  secretEnv: ['FIREBASE_API_KEY']  
+        "
+  secretEnv:
+    - FIREBASE_API_KEY
 
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
