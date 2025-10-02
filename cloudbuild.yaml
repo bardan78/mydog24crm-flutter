@@ -1,5 +1,5 @@
 steps:
-# 1. GENEROWANIE PLIKU firebase_options.dart (Poprawiona składnia BASH)
+# 1. GENEROWANIE PLIKU firebase_options.dart (Poprawiona wersja BASH)
 - name: 'bash'
   entrypoint: 'bash'
   args:
@@ -7,18 +7,20 @@ steps:
     - |
       mkdir -p lib
       
-      # Używamy printf do bezpiecznego wstrzykiwania zmiennych do pliku Dart
-      # Zwróć uwagę, że cały plik jest budowany jako jeden ciąg
+      # Przypisanie zmiennej środowiskowej (odczytanej z secretEnv) do zmiennej lokalnej BASH
+      API_KEY_VALUE="$FIREBASE_API_KEY" 
+
       printf "// Plik wygenerowany automatycznie przez Cloud Build.\n" > lib/firebase_options.dart
       printf "import 'package:firebase_core/firebase_core.dart';\n\n" >> lib/firebase_options.dart
       printf "const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(\n" >> lib/firebase_options.dart
-      printf "  apiKey: '%s',\n" "$FIREBASE_API_KEY" >> lib/firebase_options.dart
-      printf "  appId: 'TWOJ_APP_ID',\n" >> lib/firebase_options.dart # Zmień na swój App ID
-      printf "  messagingSenderId: 'TWOJ_MESSAGING_ID',\n" >> lib/firebase_options.dart # Zmień na swój Sender ID
+      printf "  apiKey: '%s',\n" "$API_KEY_VALUE" >> lib/firebase_options.dart # Używamy zmiennej lokalnej BASH
+      printf "  appId: 'TWOJ_APP_ID',\n" >> lib/firebase_options.dart 
+      printf "  messagingSenderId: 'TWOJ_MESSAGING_ID',\n" >> lib/firebase_options.dart 
       printf "  projectId: '%s',\n" "${PROJECT_ID}" >> lib/firebase_options.dart
       printf ");\n" >> lib/firebase_options.dart
 
-  secretEnv: ['FIREBASE_API_KEY']
+  secretEnv: ['FIREBASE_API_KEY'] # Nadal wymagane, aby zmienna była dostępna
+
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
 - name: 'gcr.io/mydog24crm/flutter-builder:latest' 
