@@ -63,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 80), // dolny padding na FAB
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
