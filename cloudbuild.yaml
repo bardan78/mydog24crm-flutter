@@ -22,7 +22,8 @@ class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform => web;
 }
 EOL
-secretEnv: ['FIREBASE_API_KEY']
+  secretEnv:
+    - FIREBASE_API_KEY
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
 - name: 'gcr.io/mydog24crm/flutter-builder:latest' 
