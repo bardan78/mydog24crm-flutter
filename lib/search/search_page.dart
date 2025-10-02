@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,8 +30,13 @@ class _SearchPageState extends State<SearchPage> {
         });
         return;
       }
+      final user = FirebaseAuth.instance.currentUser;
+      final token = await user?.getIdToken();
       final url = Uri.parse('https://mydog24crm-app-844017125587.europe-central2.run.app/api/1/clients?q=$query');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $token'},
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         print('API response: ${response.body}');
