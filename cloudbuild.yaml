@@ -1,6 +1,30 @@
 steps:
-# 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
-# Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
+# 0. GENEROWANIE PLIKU firebase_options.dart
+- name: 'ubuntu'
+  id: 'generate-firebase-options'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      cat > lib/firebase_options.dart <<EOL
+import 'package:firebase_core/firebase_core.dart';
+
+class DefaultFirebaseOptions {
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: '$FIREBASE_API_KEY',
+    appId: '1:844017125587:web:49b2d9f1fdd81a2d2dac26',
+    messagingSenderId: '844017125587',
+    projectId: 'mydog24crm',
+    authDomain: 'mydog24crm.firebaseapp.com',
+    storageBucket: 'mydog24crm.firebasestorage.app',
+    measurementId: 'G-CJGW7X5JFD',
+  );
+  static FirebaseOptions get currentPlatform => web;
+}
+EOL
+secretEnv: ['FIREBASE_API_KEY']
+  # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
+  # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
 - name: 'gcr.io/mydog24crm/flutter-builder:latest' 
   entrypoint: 'bash'
   args:
@@ -11,7 +35,7 @@ steps:
       flutter pub get
       flutter build web --release
 
-# 2. Wdrożenie na Firebase Hosting (używamy Node.js, które działało ostatnim razem)
+  # 2. Wdrożenie na Firebase Hosting (używamy Node.js, które działało ostatnim razem)
 - name: 'node:20' 
   entrypoint: 'bash'
   args:
