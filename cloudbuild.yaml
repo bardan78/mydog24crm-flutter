@@ -1,26 +1,36 @@
 steps:
-# 1. GENEROWANIE PLIKU firebase_options.dart (Ostateczna, odporna wersja)
-# Używamy potrójnego escapingu, aby ukryć znak dolara przed walidatorem Cloud Build.
-- name: 'gcr.io/cloud-builders/gcloud' 
+# 1. GENEROWANIE PLIKU firebase_options.dart (Wersja odporna na błąd walidacji - Python)
+- name: 'python:3-slim' # Używamy czystego obrazu Pythona
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      # Użycie funkcji printenv do jawnego odczytu wartości
-      API_KEY_VALUE=$(printenv FIREBASE_API_KEY)
-      
       mkdir -p lib
       
-      printf "// Plik wygenerowany automatycznie przez Cloud Build.\n" > lib/firebase_options.dart
-      printf "import 'package:firebase_core/firebase_core.dart';\n\n" >> lib/firebase_options.dart
-      printf "const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(\n" >> lib/firebase_options.dart
-      printf "  apiKey: '%s',\n" "${API_KEY_VALUE}" >> lib/firebase_options.dart
-      printf "  appId: 'TWOJ_APP_ID',\n" >> lib/firebase_options.dart 
-      printf "  messagingSenderId: 'TWOJ_MESSAGING_ID',\n" >> lib/firebase_options.dart 
-      printf "  projectId: '%s',\n" "${PROJECT_ID}" >> lib/firebase_options.dart # Zmienne wbudowane są dozwolone
-      printf ");\n" >> lib/firebase_options.dart
+      # Python generuje plik z bezpiecznym wstrzyknięciem zmiennych środowiskowych
+      python3 -c "
+      import os
 
-  secretEnv: ['FIREBASE_API_KEY'] 
+      API_KEY = os.environ.get('FIREBASE_API_KEY')
+      PROJECT_ID = os.environ.get('PROJECT_ID')
+
+      config_content = f'''
+      // Plik wygenerowany automatycznie przez Cloud Build.
+      import 'package:firebase_core/firebase_core.dart';
+
+      const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(
+        apiKey: '{API_KEY}', 
+        appId: 'TWOJ_APP_ID', 
+        messagingSenderId: 'TWOJ_MESSAGING_ID', 
+        projectId: '{PROJECT_ID}',
+      );
+      '''
+
+      # Zapisanie pliku
+      with open('lib/firebase_options.dart', 'w') as f:
+          f.write(config_content)
+      "
+        secretEnv: ['FIREBASE_API_KEY']  
 
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
