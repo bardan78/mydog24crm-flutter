@@ -30,7 +30,7 @@ steps:
       with open('lib/firebase_options.dart', 'w') as f:
           f.write(config_content)
       "
-        secretEnv: ['FIREBASE_API_KEY']  
+  secretEnv: ['FIREBASE_API_KEY']  
 
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
