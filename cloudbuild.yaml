@@ -1,29 +1,24 @@
 steps:
-# 0. GENEROWANIE PLIKU firebase_options.dart
-- name: 'ubuntu'
-  id: 'generate-firebase-options'
+# 1. GENEROWANIE PLIKU firebase_options.dart (Poprawiona składnia BASH)
+- name: 'bash'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      cat > lib/firebase_options.dart <<EOL
-import 'package:firebase_core/firebase_core.dart';
+      mkdir -p lib
+      
+      # Używamy printf do bezpiecznego wstrzykiwania zmiennych do pliku Dart
+      # Zwróć uwagę, że cały plik jest budowany jako jeden ciąg
+      printf "// Plik wygenerowany automatycznie przez Cloud Build.\n" > lib/firebase_options.dart
+      printf "import 'package:firebase_core/firebase_core.dart';\n\n" >> lib/firebase_options.dart
+      printf "const FirebaseOptions defaultFirebaseOptions = FirebaseOptions(\n" >> lib/firebase_options.dart
+      printf "  apiKey: '%s',\n" "$FIREBASE_API_KEY" >> lib/firebase_options.dart
+      printf "  appId: 'TWOJ_APP_ID',\n" >> lib/firebase_options.dart # Zmień na swój App ID
+      printf "  messagingSenderId: 'TWOJ_MESSAGING_ID',\n" >> lib/firebase_options.dart # Zmień na swój Sender ID
+      printf "  projectId: '%s',\n" "${PROJECT_ID}" >> lib/firebase_options.dart
+      printf ");\n" >> lib/firebase_options.dart
 
-class DefaultFirebaseOptions {
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: '$FIREBASE_API_KEY',
-    appId: '1:844017125587:web:49b2d9f1fdd81a2d2dac26',
-    messagingSenderId: '844017125587',
-    projectId: 'mydog24crm',
-    authDomain: 'mydog24crm.firebaseapp.com',
-    storageBucket: 'mydog24crm.firebasestorage.app',
-    measurementId: 'G-CJGW7X5JFD',
-  );
-  static FirebaseOptions get currentPlatform => web;
-}
-EOL
-  secretEnv:
-    - FIREBASE_API_KEY
+  secretEnv: ['FIREBASE_API_KEY']
   # 1. Budowanie Flutter Web z użyciem Twojego szybkiego, wstępnie zbudowanego obrazu
   # Ten krok jest teraz natychmiastowy, ponieważ obraz jest już gotowy w GCR.
 - name: 'gcr.io/mydog24crm/flutter-builder:latest' 
